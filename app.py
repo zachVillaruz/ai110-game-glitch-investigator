@@ -5,9 +5,9 @@ def get_range_for_difficulty(difficulty: str):
     if difficulty == "Easy":
         return 1, 20
     if difficulty == "Normal":
-        return 1, 100
-    if difficulty == "Hard":
         return 1, 50
+    if difficulty == "Hard":
+        return 1, 100
     return 1, 100
 
 
@@ -35,16 +35,16 @@ def check_guess(guess, secret):
 
     try:
         if guess > secret:
-            return "Too High", "📈 Go HIGHER!"
+            return "Too High", "📉 Go LOWER!"
         else:
-            return "Too Low", "📉 Go LOWER!"
+            return "Too Low", "📈 Go HIGHER!"
     except TypeError:
         g = str(guess)
         if g == secret:
             return "Win", "🎉 Correct!"
-        if g > secret:
-            return "Too High", "📈 Go HIGHER!"
-        return "Too Low", "📉 Go LOWER!"
+        if int(g) > int(secret):
+            return "Too High", "📉 Go LOWER!"
+        return "Too Low", "📈 Go HIGHER!"
 
 
 def update_score(current_score: int, outcome: str, attempt_number: int):
@@ -78,8 +78,8 @@ difficulty = st.sidebar.selectbox(
 )
 
 attempt_limit_map = {
-    "Easy": 6,
-    "Normal": 8,
+    "Easy": 8,
+    "Normal": 6,
     "Hard": 5,
 }
 attempt_limit = attempt_limit_map[difficulty]
@@ -93,7 +93,7 @@ if "secret" not in st.session_state:
     st.session_state.secret = random.randint(low, high)
 
 if "attempts" not in st.session_state:
-    st.session_state.attempts = 1
+    st.session_state.attempts = 0
 
 if "score" not in st.session_state:
     st.session_state.score = 0
@@ -105,18 +105,6 @@ if "history" not in st.session_state:
     st.session_state.history = []
 
 st.subheader("Make a guess")
-
-st.info(
-    f"Guess a number between 1 and 100. "
-    f"Attempts left: {attempt_limit - st.session_state.attempts}"
-)
-
-with st.expander("Developer Debug Info"):
-    st.write("Secret:", st.session_state.secret)
-    st.write("Attempts:", st.session_state.attempts)
-    st.write("Score:", st.session_state.score)
-    st.write("Difficulty:", difficulty)
-    st.write("History:", st.session_state.history)
 
 raw_guess = st.text_input(
     "Enter your guess:",
@@ -133,7 +121,10 @@ with col3:
 
 if new_game:
     st.session_state.attempts = 0
-    st.session_state.secret = random.randint(1, 100)
+    st.session_state.secret = random.randint(low, high)
+    st.session_state.score = 0
+    st.session_state.history = []
+    st.session_state.status = "playing"
     st.success("New game started.")
     st.rerun()
 
@@ -187,5 +178,17 @@ if submit:
                     f"Score: {st.session_state.score}"
                 )
 
+st.info(
+    f"Guess a number between {low} and {high}. "
+    f"Attempts left: {attempt_limit - st.session_state.attempts}"
+)
+
+with st.expander("Developer Debug Info"):
+    st.write("Secret:", st.session_state.secret)
+    st.write("Attempts:", st.session_state.attempts)
+    st.write("Score:", st.session_state.score)
+    st.write("Difficulty:", difficulty)
+    st.write("History:", st.session_state.history)
+
 st.divider()
-st.caption("Built by an AI that claims this code is production-ready.")
+st.caption("Built by an AI that claims this code is production-ready and an AI that has to clean up after the first AI's mess.")
