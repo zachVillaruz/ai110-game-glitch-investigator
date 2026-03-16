@@ -5,6 +5,7 @@ def get_range_for_difficulty(difficulty: str):
         return 1, 100
     if difficulty == "Hard":
         return 1, 200
+        #FIX: Made Hard mode harder than Normal by giving a bigger range.
     return 1, 100
 
 
@@ -29,8 +30,9 @@ def check_guess(guess, secret):
 
     try:
         if guess > secret:
-            return "Too High", "� Go LOWER!"
+            return "Too High", "📉 Go LOWER!"
         return "Too Low", "📈 Go HIGHER!"
+        # FIX: The hints are not backwards this time.
     except TypeError:
         g = str(guess)
         if g == secret:
